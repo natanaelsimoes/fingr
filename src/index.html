@@ -1,17 +1,64 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fingr Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        .row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .col {
+            height: 40vh;
+            outline: 1px solid black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 3rem;
+        }
+
+        .col:hover {
+            background-color: aquamarine;
+        }
+    </style>
 </head>
+
 <body>
+    <div id="r-3" class="row">
+        <div id="c-1" class="col">1</div>
+        <div id="c-2" class="col">2</div>
+    </div>
+    <div id="r-3" class="row">
+        <div id="c-3" class="col">3</div>
+        <div id="c-4" class="col">4</div>
+    </div>
+    <div id="r-3" class="row">
+        <div id="c-5" class="col">5</div>
+        <div id="c-6" class="col">6</div>
+    </div>
     <script>
         window.onload = () => {
-            const { sum } = Fingr;
-            console.log(sum(1, 2))
+            new Fingr.default().start({ visualFeedback: true });
         }
     </script>
 </body>
+
 </html>
