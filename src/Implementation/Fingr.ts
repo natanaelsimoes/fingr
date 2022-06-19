@@ -1,9 +1,8 @@
 import { Finger } from './Finger';
 import { BrowserEnvException } from '../Exception/BrowserEnvExpecption';
-import { FingrOptions } from '../Interface/FingrOptions';
+import { FingrOptionsInterface } from '../Interface/FingrOptionsInterface';
 import { FingerNotFoundException } from '../Exception/FingerNotFoundException';
-
-import { FingrEvents } from '../Interface/FingrEvents';
+import { FingrEvents } from '../Events/FingrEvents';
 import { FingrAbstract } from '../Abstract/FingrAbstract';
 
 export class Fingr extends FingrAbstract {
@@ -57,7 +56,7 @@ export class Fingr extends FingrAbstract {
 
   public start({
     visualFeedback = false,
-  }: FingrOptions) {
+  }: FingrOptionsInterface) {
     if (!document || !window) {
       throw new BrowserEnvException();
     }

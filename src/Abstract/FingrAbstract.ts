@@ -1,13 +1,13 @@
 import EventEmitter from 'events';
-import { Finger } from '../Implementation/Finger';
-import { FingrEvents } from '../Interface/FingrEvents';
-import { FingrOptions } from '../Interface/FingrOptions';
+import { FingrEvents } from '../Events/FingrEvents';
+import { FingrOptionsInterface } from '../Interface/FingrOptionsInterface';
 import { FingerPresenter } from '../Presenter/FingerPresenter';
+import { FingerAbstract } from './FingerAbstract';
 
 export abstract class FingrAbstract extends EventEmitter {
   protected presenters: FingerPresenter[] = [];
-  fingers: Finger[] = [];
-  options?: FingrOptions;
+  fingers: FingerAbstract[] = [];
+  options?: FingrOptionsInterface;
 
   protected bindEvents() {
     window.addEventListener('pointerdown', this.addFinger.bind(this));
@@ -21,7 +21,7 @@ export abstract class FingrAbstract extends EventEmitter {
     window.removeEventListener('pointerup', this.removeFinger.bind(this));
   }
 
-  protected addPresenter(finger: Finger) {
+  protected addPresenter(finger: FingerAbstract) {
     if (!this.options?.visualFeedback) {
       return;
     }
@@ -30,7 +30,7 @@ export abstract class FingrAbstract extends EventEmitter {
     this.presenters.push(presenter);
   }
 
-  protected removePresenter(finger: Finger) {
+  protected removePresenter(finger: FingerAbstract) {
     if (!this.options?.visualFeedback) {
       return;
     }
@@ -101,6 +101,6 @@ export abstract class FingrAbstract extends EventEmitter {
     return super.listeners(eventName);
   }
 
-  public abstract start(options: FingrOptions): void;
+  public abstract start(options: FingrOptionsInterface): void;
   public abstract stop(): void;
 }
