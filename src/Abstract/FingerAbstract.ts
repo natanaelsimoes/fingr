@@ -1,17 +1,20 @@
 import EventEmitter from 'events';
-import { Coordinate } from '../Interface/Coordinate';
-import { FingrEvents } from '../Interface/FingrEvents';
+import { CoordinateInterface } from '../Interface/CoordinateInterface';
+import { FingerInterface } from '../Interface/FingerInterface';
+import { FingrEvents } from '../Events/FingrEvents';
 
-export class FingerAbstract extends EventEmitter {
+export class FingerAbstract extends EventEmitter implements FingerInterface {
   id: number;
-  position: Coordinate = { x: 0, y: 0 };
+  position: CoordinateInterface = { x: 0, y: 0 };
+  viewportPosition: CoordinateInterface = { x: 0, y: 0 };
+  direction: number;
   hovering?: HTMLElement;
-  hoverTree: HTMLElement[] = [];
   nativeEventsTrace: PointerEvent[] = [];
 
   constructor(initialPointerEvent: PointerEvent) {
     super();
     this.id = initialPointerEvent.pointerId;
+    this.direction = 0;
     this.nativeEventsTrace.unshift(initialPointerEvent);
     this.updateInternals();
   }
@@ -22,14 +25,15 @@ export class FingerAbstract extends EventEmitter {
 
   protected updateInternals() {
     const event = this.nativeEventsTrace[0];
-
     this.position = {
+      x: event.offsetX,
+      y: event.offsetY,
+    }; 
+    this.viewportPosition = {
       x: event.clientX,
       y: event.clientY,
     };
-
-    this.hoverTree = (event as any).path;
-    this.hovering = this.hoverTree[0];
+    this.hovering = event.target as HTMLElement;
   }
 
   update(pointerEvent: PointerEvent) {

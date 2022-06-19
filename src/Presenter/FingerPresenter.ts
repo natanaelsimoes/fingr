@@ -1,13 +1,16 @@
-import { Finger } from '../Implementation/Finger';
-import { FingrEvents } from '../Interface/FingrEvents';
+import { FingrEvents } from '../Events/FingrEvents';
 import { HtmlElement } from '../Utils/HtmlElement';
 import { RandomID } from '../Utils/RandomId';
+import { FingerAbstract } from '../Abstract/FingerAbstract';
 
 export class FingerPresenter {
   static BASE_SIZE = 20;
+  static BORDER_COLOR = '#f00';
+  static BORDER_WIDTH = 4;
+  static FULL_SIZE = FingerPresenter.BASE_SIZE + (
+    FingerPresenter.BORDER_WIDTH * 2
+  );
   static PREFIX = 'fingr-marker-';
-  static OUTLINE_COLOR = '#f00';
-  static OUTLINE_WIDTH = 4;
   static TEXT_SIZE = 10;
   static TEXT_COLOR = '#000';
 
@@ -23,10 +26,10 @@ export class FingerPresenter {
     display: 'block',
     width: `${FingerPresenter.BASE_SIZE}px`,
     height: `${FingerPresenter.BASE_SIZE}px`,
-    borderRadius: `${FingerPresenter.BASE_SIZE / 2}px`,
-    outlineColor: FingerPresenter.OUTLINE_COLOR,
-    outlineWidth: `${FingerPresenter.OUTLINE_WIDTH}px`,
-    outlineStyle: 'solid',
+    borderRadius: `${FingerPresenter.BASE_SIZE}px`,
+    borderColor: FingerPresenter.BORDER_COLOR,
+    borderWidth: `${FingerPresenter.BORDER_WIDTH}px`,
+    borderStyle: 'solid',
   };
 
   static INFO_STYLE: Partial<CSSStyleDeclaration> = {
@@ -35,11 +38,11 @@ export class FingerPresenter {
     fontSize: `${FingerPresenter.TEXT_SIZE}px`,
   };
 
-  private finger: Finger;
+  private finger: FingerAbstract;
   private markerId: string;
   private willUnmount = false;
 
-  constructor(finger: Finger) {
+  constructor(finger: FingerAbstract) {
     this.markerId = `${FingerPresenter.PREFIX}${RandomID.generate()}`;
     this.finger = finger;
     this.updatePosition();
@@ -87,23 +90,32 @@ export class FingerPresenter {
     return infoTable;
   }
 
+  private createFingerMarker(): HTMLElement {
+    const fingerMarker = document.createElement('div') as HTMLElement;
+    fingerMarker.id = this.markerId;
+    HtmlElement.updateStyle(fingerMarker, FingerPresenter.MARKER_STYLE);
+    
+    const fingerCircle = document.createElement('div') as HTMLElement;
+    fingerCircle.dataset.markerType = 'circle';
+    HtmlElement.updateStyle(fingerCircle, FingerPresenter.CIRCLE_STYLE);
+    
+    const fingerInfo = document.createElement('div') as HTMLElement;
+    fingerInfo.dataset.markerType = 'info';
+    HtmlElement.updateStyle(fingerInfo, FingerPresenter.INFO_STYLE);
+    
+    fingerMarker.appendChild(fingerCircle);
+    fingerMarker.appendChild(fingerInfo);
+    document.body.appendChild(fingerMarker);
+    
+    return fingerMarker;
+  }
+
   private getFingerMarker(): HTMLElement {
     let fingerMarker = document.getElementById(this.markerId) as HTMLElement;
     if (!fingerMarker && !this.willUnmount) {
-      fingerMarker = document.createElement('div') as HTMLElement;
-      fingerMarker.id = this.markerId;
-      HtmlElement.updateStyle(fingerMarker, FingerPresenter.MARKER_STYLE);
-      const fingerCircle = document.createElement('div') as HTMLElement;
-      fingerCircle.dataset.markerType = 'circle';
-      HtmlElement.updateStyle(fingerCircle, FingerPresenter.CIRCLE_STYLE);
-      const fingerInfo = document.createElement('div') as HTMLElement;
-      fingerInfo.dataset.markerType = 'info';
-      HtmlElement.updateStyle(fingerInfo, FingerPresenter.INFO_STYLE);
-      fingerInfo.innerHTML = 'x = 1';
-      fingerMarker.appendChild(fingerCircle);
-      fingerMarker.appendChild(fingerInfo);
-      document.body.appendChild(fingerMarker);
+      fingerMarker = this.createFingerMarker();  
     }
+    
     const fingerInfo = fingerMarker.querySelector('[data-marker-type="info"]');
     if (fingerInfo) {
       fingerInfo.innerHTML = this.getInfoTable().outerHTML;
@@ -114,9 +126,9 @@ export class FingerPresenter {
 
   private updatePosition(): HTMLElement {
     const fingerMarker = this.getFingerMarker();
-    const { x, y } = this.finger.position;
-    fingerMarker.style.left = `${x - FingerPresenter.BASE_SIZE / 2}px`;
-    fingerMarker.style.top = `${y - FingerPresenter.BASE_SIZE / 2}px`;
+    const { x, y } = this.finger.viewportPosition;
+    fingerMarker.style.left = `${x - FingerPresenter.FULL_SIZE / 2}px`;
+    fingerMarker.style.top = `${y - FingerPresenter.FULL_SIZE / 2}px`;
     return fingerMarker;
   }
 
