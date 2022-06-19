@@ -1,5 +1,3 @@
-export function sum(a: number, b: number): number {
-  return a + b;
-} 
+import { Fingr } from './Implementation/Fingr';
 
-export default { sum };
+export default Fingr;
